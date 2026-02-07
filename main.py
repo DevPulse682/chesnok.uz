@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 
 from routers import posts_router
+from routers import tags_router
+from routers import categories_router
+from routers import profession_router
 from database import engine
 import models
 from weather.weather import router as weather_app
@@ -18,3 +21,6 @@ app = FastAPI(
 
 app.include_router(weather_app, prefix="/info", tags=["weather"])
 app.include_router(posts_router)
+app.include_router(tags_router)
+app.include_router(categories_router)
+app.include_router(profession_router)
