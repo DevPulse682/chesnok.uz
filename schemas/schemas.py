@@ -1,5 +1,6 @@
 from datetime import datetime
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
+from typing import Optional
 
 
 class BaseConfigModel(BaseModel):
@@ -92,23 +93,23 @@ class WeatherMainInline(BaseModel):
 class WeatherResponse(BaseModel):
     coord: WeatherCoord
     weather: list[WeatherInline]
-    # base: str
-    # main: WeatherMainInline
-    # visibility: int
-    # wind: dict[str, float] | None = None
-    # rain: dict[str, float] | None = None
-    # clouds: dict[str, int] | None = None
-    # dt: int
-    # sys: dict[str, int | str] | None = None
-    # timezone: int
-    # id: int
-    # name: str
-    # cod: int
+    base: str
+    main: WeatherMainInline
+    visibility: int
+    wind: dict[str, float] | None = None
+    rain: dict[str, float] | None = None
+    clouds: dict[str, int] | None = None
+    dt: int
+    sys: dict[str, int | str] | None = None
+    timezone: int
+    id: int
+    name: str
+    cod: int
 
 
 class UserCreateRequest(BaseModel):
-    email: EmailStr
-    password: str
+    email: EmailStr = Field(description="Users' emails")
+    password: str = Field(..., min_length=8, description="At least 8 characters!")
 
 
 class UserResponse(BaseModel):
@@ -116,3 +117,5 @@ class UserResponse(BaseModel):
     email: EmailStr
     first_name: str | None = None
     last_name: str | None = None
+    is_active: bool = True
+    created_at: Optional[datetime] = None

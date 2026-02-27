@@ -9,7 +9,7 @@ from models import User
 
 router = APIRouter(prefix="/lesson", tags=["Lesson"])
 
-SECRET_TOKEN = "shamsiddin"
+SECRET_TOKEN = "aziz01"  # Bu tokenni maxfiy saqlang va hech qachon kodda bevosita yozmang! Bu faqat misol uchun.
 
 
 @router.get("/protected/")

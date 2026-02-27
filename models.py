@@ -11,9 +11,8 @@ from sqlalchemy import (
     func,
     Table,
     Column,
-    relationship,
 )
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
 
@@ -32,7 +31,11 @@ class BaseModel(Base):
 
 class Profession(BaseModel):
     __tablename__ = "professions"
+
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     name: Mapped[str] = mapped_column(String(50), nullable=False)
+
+    users: Mapped[list["User"]] = relationship(back_populates="profession")
 
     def __repr__(self):
         return f"Profession({self.name})"
@@ -42,7 +45,7 @@ class User(BaseModel):
     __tablename__ = "users"
 
     email: Mapped[str] = mapped_column(String(50), unique=True, nullable=True)
-    password: Mapped[str] = mapped_column(String(100), nullable=True)
+    password_hash: Mapped[str] = mapped_column(String(100), nullable=True)
     first_name: Mapped[str] = mapped_column(String(50), nullable=True)
     profession_id: Mapped[int] = mapped_column(
         ForeignKey("professions.id"), nullable=True
@@ -54,9 +57,13 @@ class User(BaseModel):
     is_staff: Mapped[bool] = mapped_column(Boolean, default=False)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
     is_deleted: Mapped[bool] = mapped_column(Boolean, default=False)
+    deleted_email: Mapped[str] = mapped_column(String(50), nullable=True)
 
     posts: Mapped[list["Post"]] = relationship(
         back_populates="user", lazy="raise_on_sql"
+    )
+    profession: Mapped[Optional["Profession"]] = relationship(
+        back_populates="users", lazy="raise_on_sql"
     )
 
     def __repr__(self):
@@ -74,6 +81,7 @@ class Category(BaseModel):
 
 class Post(BaseModel):
     __tablename__ = "posts"
+    user: Mapped["User"] = relationship("User", back_populates="posts")
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     title: Mapped[str] = mapped_column(String(255), nullable=False)
     slug: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
@@ -109,6 +117,10 @@ class Tag(BaseModel):
 
     name: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     slug: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
+
+    posts: Mapped[list["Post"]] = relationship(
+        secondary="post_tags", back_populates="tags"
+    )
 
 
 class Media(BaseModel):

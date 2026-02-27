@@ -1,12 +1,22 @@
 from fastapi import APIRouter
 import httpx
 
-router = APIRouter()
+
+from schemas import WeatherResponse
 
 
-@router.get("/weather/")
-async def get_weather(lat: float, lon: float):
-    url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&current_weather=true"
+router = APIRouter(prefix="/weather", tags=["Weather"])
+
+API_KEY = "b89d55fa0d0b58e75f3fa5c6a3a61632"
+
+
+@router.get("/weather/today/", response_model=WeatherResponse)
+async def get_weather(city: str):
     async with httpx.AsyncClient() as client:
-        response = await client.get(url)
-        return response.json()
+        resp = await client.get(
+            url=f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={API_KEY}&units=metric"
+        )
+
+        if resp.status_code == 404:
+            return {"error": "Shahar topilmadi! "}
+        return resp.json()
