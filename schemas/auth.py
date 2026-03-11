@@ -54,3 +54,6 @@ class UserProfileUpdateRequest(BaseModel):
     last_name: str | None = None
     bio: str | None = None
     profession_id: int | None = None
+
+
+## SESSION AUTH
